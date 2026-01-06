@@ -10,10 +10,12 @@ class Config(BaseSettings):
     """Configuration."""
 
     model_config = SettingsConfigDict(env_file=".env")
+
     ai_model_name: str = "openrouter/mistralai/mistral-small-3.1-24b-instruct:free"
     ai_model_key: SecretStr
     jina_ai_key: SecretStr
     anthropic_key: SecretStr
+    tool_call_timeout: int = 30
 
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
