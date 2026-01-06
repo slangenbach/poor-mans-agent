@@ -1,0 +1,20 @@
+{
+  "template": "https://github.com/slangenbach/cookiecutter-python-uv",
+  "commit": "6d4ff82157160ae3761c5453d5133f866c223f61",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "Poor man's agent",
+      "project_description": "An almost barebones agent implemntation for the poor dev",
+      "project_slug": "poor-mans-agent",
+      "package_name": "pma",
+      "author": "Stefan Langenbach",
+      "email": "stefan@langenbach.online",
+      "deploy_to_gh": false,
+      "deploy_to_pypi": false,
+      "_template": "https://github.com/slangenbach/cookiecutter-python-uv",
+      "_commit": "6d4ff82157160ae3761c5453d5133f866c223f61"
+    }
+  },
+  "directory": null
+}
