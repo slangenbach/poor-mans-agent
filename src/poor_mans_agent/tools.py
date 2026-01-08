@@ -6,7 +6,7 @@ from .config import get_config
 from .logger import get_logger
 
 config = get_config()
-logger = get_logger(__name__)
+logger = get_logger(__name__, level=config.log_level)
 
 
 def search(query: str) -> str:

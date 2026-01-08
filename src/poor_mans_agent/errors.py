@@ -1,5 +1,5 @@
 """Custom errors."""
 
 
-class CustomError(Exception):
+class PoorMansAgentError(Exception):
     """Custom error."""

@@ -10,11 +10,12 @@ from openai import OpenAI
 from openai.types.chat import ChatCompletion
 
 from .config import get_config
+from .errors import PoorMansAgentError
 from .logger import get_logger
 from .prompts import SYSTEM_PROMPT
 
 config = get_config()
-logger = get_logger(__name__)
+logger = get_logger(__name__, level=config.log_level)
 
 
 class Agent:
@@ -28,14 +29,15 @@ class Agent:
         max_iterations: int = 3,
     ) -> None:
         self.model = model if model else config.ai_model_name
-        self.tools = [self._get_tool_schema(tool) for tool in tools] if tools else None
+        self.tools = {tool.__name__: tool for tool in tools} if tools else {}  # type: ignore[unresolved-attribute]
+        self._tool_schemas = [self._get_tool_schema(tool) for tool in tools] if tools else None
         self.system_prompt = (
             system_prompt
             if system_prompt
             else SYSTEM_PROMPT.format(current_timestamp=datetime.now(tz=tz.UTC).isoformat())
         )
         self.max_iterations = max_iterations
-        self.client = OpenAI(
+        self._client = OpenAI(
             base_url=config.ai_model_base_url, api_key=config.ai_model_key.get_secret_value()
         )
         self.messages = [{"role": "system", "content": self.system_prompt}]
@@ -68,13 +70,14 @@ class Agent:
             },
         }
 
-    @staticmethod
-    def _get_tool(name: str) -> Callable:
+    def _get_tool(self, name: str) -> Callable:
         try:
-            return globals()[name]
-        except KeyError:
+            return self.tools[name]
+        except KeyError as err:
             logger.error("Could not find tool %s", name)
-            raise
+            raise PoorMansAgentError(
+                f"Tool '{name}' not found. Make sure the tool is actually defined."
+            ) from err
 
     @staticmethod
     def _call_tool(tool: Callable, input: dict[str, Any] | str) -> Any:
@@ -86,15 +89,16 @@ class Agent:
     @staticmethod
     def _format_tool_call_result(id: str, result: Any) -> dict[str, str]:
         return {
-            "type": "tool_result",
+            "role": "tool",
             "tool_call_id": id,
             "content": str(result),
         }
 
     def _call_model(self) -> ChatCompletion:
         """Call AI model."""
-        response = self.client.chat.completions.create(
-            model=self.model, tools=self.tools, messages=self.messages
+        logger.debug("Getting response from AI")
+        response = self._client.chat.completions.create(
+            model=self.model, tools=self._tool_schemas, messages=self.messages
         )
 
         self.messages.append(response.choices[0].message.model_dump())
@@ -108,10 +112,14 @@ class Agent:
         response = self._call_model()
         iterations = 0
 
-        while (
-            response.choices[0].finish_reason == "tool_calls" and iterations < self.max_iterations
-        ):
+        while response.choices[0].finish_reason == "tool_calls":
             iterations += 1
+
+            if iterations >= self.max_iterations:
+                logger.warning("Reached max iteration (%d) limit", self.max_iterations)
+                raise PoorMansAgentError(
+                    f"Agent exceeded max iterations ({self.max_iterations}) without completing the task."  # noqa: E501
+                )
 
             tool_use_block = response.choices[0].message.tool_calls[0]  # type: ignore[not-subscriptable]
             tool_name = tool_use_block.function.name  # type: ignore[possibly-missing-attribute]
@@ -136,8 +144,5 @@ class Agent:
 
             self.messages.append(tool_call_result)
             response = self._call_model()
-
-        if iterations >= self.max_iterations:
-            logger.warning("Reached max iteration (%d) limit", self.max_iterations)
 
         return response.choices[0].message.content
