@@ -17,6 +17,9 @@ dependencies = [
     "pydantic-settings>=2.9.1",
 ]
 
+[project.scripts]
+pma = "poor_mans_agent.cli:main"
+
 [dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
