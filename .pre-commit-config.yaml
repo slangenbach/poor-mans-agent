@@ -33,6 +33,7 @@ repos:
         entry: uv run ty check
         language: python
         types_or: [python, pyi, jupyter]
+        require_serial: true
 
   - repo: local
     hooks:

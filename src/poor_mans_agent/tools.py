@@ -9,30 +9,46 @@ config = get_config()
 logger = get_logger(__name__)
 
 
-def search(query: str) -> httpx.Response:
+def search(query: str) -> str:
     """Search the web for the given query using Jina AI."""
-    response = httpx.get(
-        url="https://s.jina.ai/",
-        params={"q": query},
-        headers={
-            "Authorization": f"Bearer {config.jina_ai_key.get_secret_value()}",
-            "X-Respond-With": "no-content",
-        },
-        timeout=config.tool_call_timeout,
-    )
+    try:
+        response = httpx.get(
+            url="https://s.jina.ai/",
+            params={"q": query},
+            headers={
+                "Authorization": f"Bearer {config.jina_ai_key.get_secret_value()}",
+                "X-Respond-With": "no-content",
+            },
+            timeout=config.tool_call_timeout,
+        )
 
-    response.raise_for_status()
+        response.raise_for_status()
 
-    return response
+        return response.text
+
+    except httpx.HTTPError as err:
+        logger.error("HTTP error during search: %s", err)
+        raise
+    except Exception as err:
+        logger.error("Unexpected error during search: %s", err)
+        raise
 
 
-def read_url(url: str) -> httpx.Response:
+def read_url(url: str) -> str:
     """Convert the content of an URL to markdown using Jina AI."""
-    response = httpx.get(
-        url=f"https://r.jina.ai/{url}",
-        headers={"Authorization": f"Bearer {config.jina_ai_key.get_secret_value()}"},
-        timeout=config.tool_call_timeout,
-    )
-    response.raise_for_status()
+    try:
+        response = httpx.get(
+            url=f"https://r.jina.ai/{url}",
+            headers={"Authorization": f"Bearer {config.jina_ai_key.get_secret_value()}"},
+            timeout=config.tool_call_timeout,
+        )
+        response.raise_for_status()
 
-    return response
+        return response.text
+
+    except httpx.HTTPError as err:
+        logger.error("HTTP error while reading URL: %s", err)
+        raise
+    except Exception as err:
+        logger.error("Unexpected error while reading URL: %s", err)
+        raise
