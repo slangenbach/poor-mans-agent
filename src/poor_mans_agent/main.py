@@ -50,25 +50,32 @@ class Agent:
         return _type
 
     def _get_tool_schema(self, tool: Callable) -> dict:
-        params = {}
+        try:
+            params = {}
 
-        for k, v in tool.__annotations__.items():
-            if k == "return":
-                continue
-            params[k] = {"type": self._get_json_type(v)}
+            for k, v in tool.__annotations__.items():
+                if k == "return":
+                    continue
+                params[k] = {"type": self._get_json_type(v)}
 
-        return {
-            "type": "function",
-            "function": {
-                "name": tool.__name__,  # type: ignore[unresolved-attribute]
-                "description": tool.__doc__,
-                "parameters": {
-                    "type": "object",
-                    "properties": params,
-                    "required": [k for k in params.keys()],
+            return {
+                "type": "function",
+                "function": {
+                    "name": tool.__name__,  # type: ignore[unresolved-attribute]
+                    "description": tool.__doc__,
+                    "parameters": {
+                        "type": "object",
+                        "properties": params,
+                        "required": [k for k in params.keys()],
+                    },
                 },
-            },
-        }
+            }
+        except AttributeError as err:
+            tool_name = getattr(tool, "__name__", repr(tool))
+            logger.error("Tool %s is missing required attributes for schema generation", tool_name)
+            raise PoorMansAgentError(
+                f"Tool '{tool_name}' must have a name, docstring and type annotations."
+            ) from err
 
     def _get_tool(self, name: str) -> Callable:
         try:
