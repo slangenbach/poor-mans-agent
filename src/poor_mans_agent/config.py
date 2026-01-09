@@ -13,8 +13,8 @@ class Config(BaseSettings):
 
     ai_model_base_url: str = "https://openrouter.ai/api/v1"
     ai_model_name: str = "openrouter/mistralai/mistral-small-3.1-24b-instruct:free"
-    ai_model_key: SecretStr
-    jina_ai_key: SecretStr
+    ai_model_key: SecretStr | None = None
+    jina_ai_key: SecretStr | None = None
     anthropic_key: SecretStr | None = None
     tool_call_timeout: int = 30
 
@@ -23,4 +23,4 @@ class Config(BaseSettings):
 
 def get_config() -> Config:
     """Get config."""
-    return Config()  # type: ignore[missing-argument]
+    return Config()
