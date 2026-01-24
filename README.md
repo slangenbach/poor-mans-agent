@@ -4,7 +4,7 @@
 
 A lightweight (not to say 'poor') AI agent implementation that can search the web and read website content.
 
-![Logo](assets/logo2.png)
+![Logo](assets/logo.png)
 
 ## About PMA
 
