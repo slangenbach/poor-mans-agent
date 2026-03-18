@@ -181,7 +181,7 @@ wheels = [
 
 [[package]]
 name = "claudette"
-version = "0.3.13"
+version = "0.3.14"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anthropic" },
@@ -189,9 +189,9 @@ dependencies = [
     { name = "msglm" },
     { name = "toolslm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/50/d4/06f5da669fa6f97a2311e1b0358791afd7b3cb1b8776499365d5423ffa3b/claudette-0.3.13.tar.gz", hash = "sha256:94c2f54c79a092a4bfd6732bf02f8abb1394c9310d30839abb194e60fae96eaf", size = 91322, upload-time = "2025-12-23T21:24:07.405Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/50/40/981379fd1747f4eba3faa632007db15057b4a73b0aa8d69771cacadb4f9b/claudette-0.3.14.tar.gz", hash = "sha256:3df39fd53199185e350b3fb198f792644037b26f0e12c8a2b6d9d34b9117e11d", size = 90538, upload-time = "2026-02-22T19:09:48.552Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/02/8d/14c865ff4da88241261e76ff14a7f3bdb042b729ccfdb94859d780f9d107/claudette-0.3.13-py3-none-any.whl", hash = "sha256:0122808527bd4b002aeefbd2dec653c3ca35eecc7df9a24f73f969da54802051", size = 41021, upload-time = "2025-12-23T21:24:02.329Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/b1/990ce072a82efad01d67aee96fdd27bb07774fcc6e86ad3b98522d4826e9/claudette-0.3.14-py3-none-any.whl", hash = "sha256:9d0f4ca5c86a1178af527394071ad292db08f9650d0606ba6bcdf3f08b401298", size = 41630, upload-time = "2026-02-22T19:09:47.217Z" },
 ]
 
 [[package]]
